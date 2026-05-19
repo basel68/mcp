@@ -48,14 +48,99 @@ The server starts on `http://localhost:3000` by default.
 
 ## VS Code / Copilot Integration
 
-Add to your `.vscode/mcp.json` or user MCP settings:
+### Option A: Install from GitHub (Recommended for Teams)
+
+Each team member runs:
+
+```bash
+npm install -g git+https://github.com/<your-org>/xray-mcp-server.git
+```
+
+Then add to `.vscode/mcp.json` in any project:
 
 ```json
 {
   "servers": {
     "xray": {
-      "type": "sse",
-      "url": "http://localhost:3000/sse"
+      "type": "stdio",
+      "command": "xray-mcp-server",
+      "env": {
+        "XRAY_CLIENT_ID": "${input:xrayClientId}",
+        "XRAY_CLIENT_SECRET": "${input:xrayClientSecret}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "xrayClientId",
+      "type": "promptString",
+      "description": "Xray Cloud Client ID"
+    },
+    {
+      "id": "xrayClientSecret",
+      "type": "promptString",
+      "description": "Xray Cloud Client Secret",
+      "password": true
+    }
+  ]
+}
+```
+
+### Option B: Clone and Run Locally
+
+```bash
+git clone https://github.com/<your-org>/xray-mcp-server.git
+cd xray-mcp-server
+npm install
+npm run build
+```
+
+Then use this `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "xray": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["<path-to-clone>/dist/index.js"],
+      "env": {
+        "XRAY_CLIENT_ID": "${input:xrayClientId}",
+        "XRAY_CLIENT_SECRET": "${input:xrayClientSecret}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "xrayClientId",
+      "type": "promptString",
+      "description": "Xray Cloud Client ID"
+    },
+    {
+      "id": "xrayClientSecret",
+      "type": "promptString",
+      "description": "Xray Cloud Client Secret",
+      "password": true
+    }
+  ]
+}
+```
+
+### Option C: npx (No Install Required)
+
+If published to npm or a private registry:
+
+```json
+{
+  "servers": {
+    "xray": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["xray-mcp-server"],
+      "env": {
+        "XRAY_CLIENT_ID": "${input:xrayClientId}",
+        "XRAY_CLIENT_SECRET": "${input:xrayClientSecret}"
+      }
     }
   }
 }
